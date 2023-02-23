@@ -2,8 +2,10 @@
 header('Access-Control-Allow-Origin: *');
 $results = array();
 
+require("../Config.php");
+
 try {
-    $database = new PDO("mysql:host=127.0.0.1;dbname=sycatle_dev;charset=utf8", "root", "root");
+    $database = new PDO("mysql:dbname=$dbname;host=$dbhost;charset=utf8", $dbuser, $dbpassword);
     $statement = $database->prepare("SELECT `quote_text` , `quote_author` FROM `quotes` ORDER BY RAND() LIMIT 1");
     $statement->execute();
 
@@ -12,8 +14,8 @@ try {
     $results["status"] = 200;
     $results["message"] = "Success.";
     $results["response"] = $value;
-} catch (Exception $e) {
+} catch (PDOException $exception) {
     $results["status"] = 401;
-    $results["message"] = "Error.";
+    $results['message'] = $exception->getMessage();
 } ?>
 <?= json_encode($results) ?>
